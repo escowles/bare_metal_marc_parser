@@ -34,13 +34,13 @@ public class metal {
   }
 
   public static MarcRecord parse_record(StringBuilder buf) {
-    System.out.println("parse_record: |" + buf.toString() + "|");
     String leader = buf.substring(0, LEADER_LENGTH);
     MarcRecord marc = new MarcRecord(leader);
 
     int dirlen = Integer.parseInt(buf.substring(DIRECTORY_POSITION, DIRECTORY_LENGTH+DIRECTORY_POSITION));
     String directory = buf.substring(LEADER_LENGTH, dirlen - LEADER_LENGTH - 1);
     int field_count = directory.length() / DIRECTORY_ENTRY_LENGTH;
+    byte[] bytes = buf.toString().getBytes(); // raw byte array to correctly handle addressing multi-byte text
     for (int i = 0; i < (field_count -1); i++) {
       int entry_start = i * DIRECTORY_ENTRY_LENGTH;
       int entry_end = entry_start + DIRECTORY_ENTRY_LENGTH;
@@ -48,7 +48,7 @@ public class metal {
       String tag = entry.substring(0, 3);
       int field_length = Integer.parseInt(entry.substring(3, 7));
       int field_offset = Integer.parseInt(entry.substring(7, 12)) + dirlen;
-      String field_data = buf.substring(field_offset, field_offset+field_length-1);
+      String field_data = new String(bytes, field_offset, field_length);
       if (tag.startsWith("00")) {
         marc.addControlField(parse_control_field(tag, field_data));
       } else {
@@ -62,7 +62,6 @@ public class metal {
     return new ControlField(tag, data.substring(0, data.length()-1));
   }
   public static DataField parse_data_field(String tag, String data) {
-    System.out.println("XXX: " + tag + "|" + data + "|");
     DataField df = new DataField(tag, data.charAt(0), data.charAt(1));
     int last = 3;
     for (int i = 3; i < data.length() - 1; i++) {

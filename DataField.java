@@ -17,7 +17,6 @@ public class DataField {
   }
 
   public void addValue(String data) {
-    System.out.println("addValue: |" + data + "|");
     String subfield = data.substring(0, 1);
     List<String> vals = values.get(subfield);
     if (vals == null) { vals = new ArrayList<>(); }
