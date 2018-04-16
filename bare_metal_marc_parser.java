@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-public class metal {
+public class bare_metal_marc_parser {
 
   public static int DIRECTORY_LENGTH = 5;
   public static int DIRECTORY_POSITION = 12;
