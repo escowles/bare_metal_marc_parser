@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -20,12 +21,21 @@ public class metal {
     BufferedReader in = new BufferedReader(new FileReader(args[0]));
 
     StringBuilder buf = new StringBuilder();
+    int records = 0;
     int i = 0;
     while (i != -1) {
       i = in.read();
       if (i == RECORD_SEPARATOR) {
+        records++;
         MarcRecord marc = parse_record(buf);
-        System.out.println(marc.toString());
+        String id = marc.controlFields.get("001").value;
+        String title = "n/a";
+        List<DataField> titles = marc.dataFields.get("245");
+        if (titles != null && titles.size() > 0) {
+          List<String> values = titles.get(0).values.get("a");
+          if (values != null) { title = values.get(0); }
+        }
+        System.out.println(records + ": " + id + ": " + title);
         buf.setLength(0);
       } else {
         buf.append((char)i);
